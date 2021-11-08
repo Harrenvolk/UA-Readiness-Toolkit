@@ -2,3 +2,5 @@
 __pycache__/
 .pytest_cache
 report.html
+browser_driver_downloads
+geckodriver.log
