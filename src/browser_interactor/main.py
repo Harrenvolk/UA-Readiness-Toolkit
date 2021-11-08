@@ -1,6 +1,6 @@
 import os
+import sys
 import pytesseract
-
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -11,6 +11,7 @@ from mss import mss
 from PIL import Image
 import argparse
 
+from utils import get_urls, get_browsers
 
 def generate_screenshot(list_of_domains, list_of_language_codes, browser):
     DELAY = 3
@@ -50,15 +51,22 @@ def test_ua_readiness(list_of_image_files, list_of_language_codes):
     tesseract_path = r"{}".format(os.environ.get("TESSERACT_PATH"))
     pytesseract.pytesseract.tesseract_cmd = tesseract_path
     for (image, language_code) in zip(list_of_image_files, list_of_language_codes):
-       text=pytesseract.image_to_string(Image.open(image), lang=language_code)
-       print(text)
-
+        text=pytesseract.image_to_string(Image.open(image), lang=language_code)
+        print("Possible URLS : ", get_urls(text), "\n\n")
+        print("Text: \n", text)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--browser', type=str, required=True)
+    parser.add_argument('--browser', type=str, default="Chrome")
+    parser.add_argument('-detect_browsers', action='store_true')
     args = parser.parse_args()
+
+    if args.detect_browsers:
+        print("Detected browsers : ")
+        for browser in get_browsers():
+            print("* ", browser)
+        sys.exit(0)
 
     load_dotenv()
     list_of_domains = ["համընդհանուր-ընկալում-թեստ.հայ","универсальное-принятие-тест.москва","सार्वभौमिक-स्वीकृति-परीक्षण.संगठन"]
