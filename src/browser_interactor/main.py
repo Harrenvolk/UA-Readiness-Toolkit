@@ -25,6 +25,9 @@ def generate_screenshot(list_of_domains, list_of_language_codes, browser):
     elif browser == "Firefox":
         browser_driver_path += "geckodriver.exe"
         driver = webdriver.Firefox(executable_path=browser_driver_path)
+    elif browser == "Edge":
+        browser_driver_path += "msedgedriver.exe"
+        driver = webdriver.Edge(executable_path=browser_driver_path)        
     
     driver.maximize_window()
     for (domain, language_code) in zip(list_of_domains, list_of_language_codes):    
