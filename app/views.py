@@ -46,12 +46,17 @@ def delete_test_url(id):
 @app.route('/add_test_url/', methods=['POST'])
 def add_test_url():
     new_tc=request.form['new_tc']
+    new_lang=request.form['sel-lang']
     with open('./.config.json', 'r+') as f:
         data = json.load(f)
-        data['tests'].append({"url": new_tc})
+        data['tests'].append({"url": new_tc, "language": new_lang})
         f.seek(0)
         f.truncate()
         json.dump(data, f)
         return redirect('/config-testcases/')
 
 
+@app.route('/config/', methods=["GET"])
+def get_config():
+    with open('./.config.json', 'r') as f:
+        return jsonify(json.load(f))
