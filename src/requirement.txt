@@ -1,0 +1,10 @@
+pytest==6.2.5
+pytest-html==3.1.1
+selenium==4.0.0
+pytesseract==0.3.8
+Pillow==8.4.0
+python-dotenv==0.19.1
+mss==6.1.0
+pywin32==302
+requests==2.26.0
+wget==3.2
