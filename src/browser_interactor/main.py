@@ -7,11 +7,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException, WebDriverException
+from selenium.webdriver.common.alert import Alert
 from mss import mss
 from PIL import Image
 import argparse
 
-from utils import get_urls, get_browsers
+from .utils import get_urls, get_browsers
 
 def generate_screenshot(list_of_domains, list_of_language_codes, browser):
     DELAY = 3
@@ -28,7 +29,7 @@ def generate_screenshot(list_of_domains, list_of_language_codes, browser):
     elif browser == "Edge":
         browser_driver_path += "msedgedriver.exe"
         driver = webdriver.Edge(executable_path=browser_driver_path)        
-    
+    driver.switch_to.window(driver.current_window_handle)
     driver.maximize_window()
     for (domain, language_code) in zip(list_of_domains, list_of_language_codes):    
         with mss() as sct:
@@ -39,7 +40,7 @@ def generate_screenshot(list_of_domains, list_of_language_codes, browser):
                 print(driver.current_url)
                 print("\n\n\n\n ++++++++++++++++++++++++++ \n\n\n\n")
                 screenshot_filename = language_code + ".png"
-                screenshot_filename = f"./screenshots/{browser}_{screenshot_filename}"
+                screenshot_filename = f"./src/browser_interactor/screenshots/{browser}_{screenshot_filename}"
                 sct.shot(output = screenshot_filename)
                 #screenshot_filename = "./" + screenshot_filename
                 list_of_image_files.append(screenshot_filename)
