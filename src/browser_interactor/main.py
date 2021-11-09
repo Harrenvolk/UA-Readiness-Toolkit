@@ -1,6 +1,6 @@
 import os
+import sys
 import pytesseract
-
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -9,12 +9,26 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException, WebDriverException
 from mss import mss
 from PIL import Image
+import argparse
 
-def generate_screenshot(list_of_domains, list_of_language_codes):
+from utils import get_urls, get_browsers
+
+def generate_screenshot(list_of_domains, list_of_language_codes, browser):
     DELAY = 3
     list_of_image_files = []
     browser_driver_path = r"{}".format(os.environ.get("BROWSER_DRIVER_PATH"))
-    driver = webdriver.Chrome(executable_path=browser_driver_path)
+    driver = None
+
+    if browser == "Chrome":
+        browser_driver_path += "chromedriver.exe"
+        driver = webdriver.Chrome(executable_path=browser_driver_path)
+    elif browser == "Firefox":
+        browser_driver_path += "geckodriver.exe"
+        driver = webdriver.Firefox(executable_path=browser_driver_path)
+    elif browser == "Edge":
+        browser_driver_path += "msedgedriver.exe"
+        driver = webdriver.Edge(executable_path=browser_driver_path)        
+    
     driver.maximize_window()
     for (domain, language_code) in zip(list_of_domains, list_of_language_codes):    
         with mss() as sct:
@@ -25,8 +39,9 @@ def generate_screenshot(list_of_domains, list_of_language_codes):
                 print(driver.current_url)
                 print("\n\n\n\n ++++++++++++++++++++++++++ \n\n\n\n")
                 screenshot_filename = language_code + ".png"
+                screenshot_filename = f"./screenshots/{browser}_{screenshot_filename}"
                 sct.shot(output = screenshot_filename)
-                screenshot_filename = "./" + screenshot_filename
+                #screenshot_filename = "./" + screenshot_filename
                 list_of_image_files.append(screenshot_filename)
             except TimeoutException:
                 print("Timeout!")
@@ -39,15 +54,27 @@ def test_ua_readiness(list_of_image_files, list_of_language_codes):
     tesseract_path = r"{}".format(os.environ.get("TESSERACT_PATH"))
     pytesseract.pytesseract.tesseract_cmd = tesseract_path
     for (image, language_code) in zip(list_of_image_files, list_of_language_codes):
-       text=pytesseract.image_to_string(Image.open(image), lang=language_code)
-       print(text)
-
+        text=pytesseract.image_to_string(Image.open(image), lang=language_code)
+        print("Possible URLS : ", get_urls(text), "\n\n")
+        print("Text: \n", text)
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--browser', type=str, default="Chrome")
+    parser.add_argument('-detect_browsers', action='store_true')
+    args = parser.parse_args()
+
+    if args.detect_browsers:
+        print("Detected browsers : ")
+        for browser in get_browsers():
+            print("* ", browser)
+        sys.exit(0)
+
     load_dotenv()
     list_of_domains = ["համընդհանուր-ընկալում-թեստ.հայ","универсальное-принятие-тест.москва","सार्वभौमिक-स्वीकृति-परीक्षण.संगठन"]
     list_of_language_codes = ["hye","rus","hin"]
     print(list_of_domains)
-    list_of_image_files = generate_screenshot(list_of_domains, list_of_language_codes)
+
+    list_of_image_files = generate_screenshot(list_of_domains, list_of_language_codes, args.browser)
     test_ua_readiness(list_of_image_files, list_of_language_codes)
