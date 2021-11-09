@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>UA Toolkit - Testcases</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="display-4 mt-5 mb-4">Configure Test URLs</h1>
+    <form class="my-3" action="/add_test_url/" method="POST">
+        <div class="form-group">
+          <label for="exampleFormControlInput1">Domain Name</label>
+          <input type="text" class="form-control" name="new_tc" id="new_tc" placeholder="New test domain">
+        </div>
+        <div class="form-group">
+            <label for="sel-lang">Language</label>
+            <select class="form-control" id="sel-lang" name="sel-lang">
+                <option value="">Select</option>
+            </select>
+          </div>
+        <button type="submit" class="btn btn-primary">Add testcase</button>
+    </form>
+
+    <hr/>
+
+    {% for tc in tests %}
+    <div class="input-group testcase my-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">{{tc.language}}</span>
+          </div>
+        <input type="text" disabled class="form-control" placeholder={{tc.url}} aria-label="Recipient's username"
+            aria-describedby="basic-addon2" id={{'inp-'+tc.id}}>
+        <div class="input-group-append">
+            <a role="button" class="edit btn btn-outline-info" type="button" id={{'edit-'+tc.id}}>Edit</a>
+            <a href={{'/delete_test_url/'+tc.id}} role="button" class="delete btn btn-outline-danger" type="button">Delete</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<script src="{{url_for('static', filename='test_urls.js')}}"></script>
+{% endblock %}
