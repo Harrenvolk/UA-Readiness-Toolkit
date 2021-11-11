@@ -132,22 +132,27 @@ def get_dns_results():
                     'query': striped_list[0].strip(),
                     'url': striped_list[1].strip(),
                     'query_response': "",
+                    'resp_url': '',
                     'is_punny_code': True if "xn--" in striped_list[1].strip() else False,
-                    'success': False, 
+                    'success': 0, 
                 })
             else:
                 responses.append({
                     'id': striped_list[2].strip(),
                     'query': striped_list[0].strip(),
                     'query_response': "",
-                    'url': '',
+                    'url': striped_list[1].strip(),
                     'is_punny_code': True if "xn--" in striped_list[1].strip() else False,
                     'success': True,
                 })          
     for response in responses:
         for request in requests:
             if response['id'] == request['id']:
-                request['success'] = True
+                if response['url'] == request['url']:  
+                    request['success'] = 2
+                else:
+                    request['success'] = 1
                 request['query_response'] = response['query']
+                request['resp_url'] = response['url']
 
     return requests

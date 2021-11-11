@@ -47,7 +47,7 @@
         <th scope="col">Query</th>
         <th scope="col">Query-Response</th>
         <th scope="col">Shown As</th>
-        <th scope="col">URL</th>
+        <!-- <th scope="col">URL</th> -->
         <th scope="col">Result</th>
       </tr>
     </thead>
@@ -55,8 +55,8 @@
       {% for result in dns_results %}
       <tr>
         <th scope="row">{{ result.id }}</th>
-        <td>{{ result.query }}</td>
-        <td>{{ result.query_response }}</td>
+        <td>{{ result.query }} : {{ result.url }}</td>
+        <td>{{ result.query_response }} : {{ result.resp_url }}</td>
         <td>
           {% if result.is_punny_code %}
           <span>Punycode</span>
@@ -64,13 +64,14 @@
           <span>U-Label</span>
           {% endif %}
 
-        <td>{{ result.url }}</td>
+        <!-- <td><i>Query</i> : {{ result.url }} <i>Resp</i> : {{ result.resp_url }}</td> -->
         <td>
-          {% if result.success %}
+          {% if result.success == 2%}
           ✅
+          {% elif result.success == 1 %}
+          ⚠️
           {% else %}
           ❌
-          ⚠️
           {% endif %}
       </tr>
       {% endfor %}
