@@ -32,12 +32,12 @@ def print_dns_info(pkt, f):
 
     try:
         if pkt.dns.qry_name and "xn--" in pkt.dns.qry_name:
-            # dns_Ids_to_look_for.add(pkt.dns.id)
+            dns_Ids_to_look_for.add(pkt.dns.id)
             print ('DNS Request from {}: {}: {}'.format(pkt.ip.src, pkt.dns.qry_name, pkt.dns.id), file=f)
     except AttributeError as e:
         pass
     try:
-        if pkt.dns.resp_name:
+        if pkt.dns.resp_name and pkt.dns.id in dns_Ids_to_look_for:
             print ('DNS Response from {}: {}: {}'.format(pkt.ip.src, pkt.dns.resp_name, pkt.dns.id), file=f)
     except AttributeError as e:
         pass
