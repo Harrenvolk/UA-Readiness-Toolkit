@@ -12,9 +12,25 @@
             to featured content or information.</p>
         <hr class="my-4">
         <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-        <p class="lead">
-            <a class="btn btn-primary btn-lg" href="/run_tests" role="button">Run tests!</a>
-        </p>
+        <form action="/run_tests/" class="lead" method="POST">
+            <div class="form-group">
+                <label for="interface">Select network interface</label>
+                <select class="form-control" name="interface" id="interface">
+                    {% for interface in interfaces %}
+                    <option>{{interface}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="browser">Select browser</label>
+                <select class="form-control" name="browser" id="browser">
+                    <option>Chrome</option>
+                    <option>Firefox</option>
+                    <option>Edge</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-lg" type="submit">Run tests!</button>
+        </form>
     </div>
 </div>
 <div class="container">

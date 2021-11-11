@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException, WebDriverException
-from selenium.webdriver.common.alert import Alert
+from selenium.webdriver.common.keys import Keys
 from mss import mss
 from PIL import Image
 import argparse
@@ -23,39 +23,55 @@ def generate_screenshot(list_of_domains, list_of_language_codes, browser):
     if browser == "Chrome":
         browser_driver_path += "chromedriver.exe"
         driver = webdriver.Chrome(executable_path=browser_driver_path)
+        driver.get('chrome://settings/clearBrowserData')
+        driver.find_element_by_xpath('//settings-ui').send_keys(Keys.ENTER)
     elif browser == "Firefox":
         browser_driver_path += "geckodriver.exe"
         driver = webdriver.Firefox(executable_path=browser_driver_path)
     elif browser == "Edge":
         browser_driver_path += "msedgedriver.exe"
-        driver = webdriver.Edge(executable_path=browser_driver_path)        
-    driver.switch_to.window(driver.current_window_handle)
+        driver = webdriver.Edge(executable_path=browser_driver_path)
+    
     driver.maximize_window()
+
     for (domain, language_code) in zip(list_of_domains, list_of_language_codes):    
         with mss() as sct:
             try:
                 driver.get("https://"+domain)
                 default_html_element = WebDriverWait(driver, DELAY).until(EC.presence_of_element_located((By.TAG_NAME, 'html')))
+            except TimeoutException:
+                print("Timeout!")
+            except WebDriverException:
+                print("Failed to load website., {}".format(domain))
+            finally:
                 print("\n\n\n\n ++++++++++++++++++++++++++ \n\n\n\n")
                 print(driver.current_url)
                 print("\n\n\n\n ++++++++++++++++++++++++++ \n\n\n\n")
                 screenshot_filename = language_code + ".png"
                 screenshot_filename = f"./src/browser_interactor/screenshots/{browser}_{screenshot_filename}"
                 sct.shot(output = screenshot_filename)
-                #screenshot_filename = "./" + screenshot_filename
                 list_of_image_files.append(screenshot_filename)
-            except TimeoutException:
-                print("Timeout!")
-            except WebDriverException:
-                print("Failed to load website., {}".format(domain))
     driver.quit()
     return list_of_image_files
+
+def resize_image(im):
+    w,_=im.size
+    return im.crop((0, 50, w/2, 120))
 
 def test_ua_readiness(list_of_image_files, list_of_language_codes):
     tesseract_path = r"{}".format(os.environ.get("TESSERACT_PATH"))
     pytesseract.pytesseract.tesseract_cmd = tesseract_path
     for (image, language_code) in zip(list_of_image_files, list_of_language_codes):
-        text=pytesseract.image_to_string(Image.open(image), lang=language_code)
+        text=pytesseract.image_to_string(resize_image(Image.open(image)), lang=language_code)
+        textEng=pytesseract.image_to_string(resize_image(Image.open(image)), lang="eng")
+
+        punycodeCount=textEng.count("xn--")
+        if punycodeCount>0:
+            pass
+            # showing in punycode
+        else:
+            pass
+            # normal form
         print("Possible URLS : ", get_urls(text), "\n\n")
         print("Text: \n", text)
 

@@ -2,6 +2,9 @@ import pyshark
 import psutil
 import socket
 import subprocess
+import time
+
+dns_Ids_to_look_for=set()
 
 def run_powershell(cmd):
     captured_result = subprocess.run(["powershell", "-Command", cmd], capture_output=True)
@@ -25,19 +28,25 @@ def list_active_interfaces():
             active_intefaces.append(interface)
     return active_intefaces
 
-def print_dns_info(pkt):
+def print_dns_info(pkt, f):
+
     try:
         if pkt.dns.qry_name and "xn--" in pkt.dns.qry_name:
-            print ('DNS Request from {}: {}'.format(pkt.ip.src, pkt.dns.qry_name))
+            # dns_Ids_to_look_for.add(pkt.dns.id)
+            print ('DNS Request from {}: {}: {}'.format(pkt.ip.src, pkt.dns.qry_name, pkt.dns.id), file=f)
     except AttributeError as e:
         pass
     try:
         if pkt.dns.resp_name:
-            print ('DNS Response from {}: {}'.format(pkt.ip.src, pkt.dns.resp_name))
+            print ('DNS Response from {}: {}: {}'.format(pkt.ip.src, pkt.dns.resp_name, pkt.dns.id), file=f)
     except AttributeError as e:
         pass
 
 def initiate_sniffing(interface_name):
-    cap = pyshark.LiveCapture(interface=interface_name)
-    cap.sniff_continuously()
-    cap.apply_on_packets(print_dns_info)
+    with open("pkt.txt", "w") as f:
+        start=time.time()
+        cap = pyshark.LiveCapture(interface=interface_name)
+
+        for pkt in cap.sniff_continuously():
+            if 30<time.time()-start: break
+            print_dns_info(pkt, f)
