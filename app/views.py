@@ -5,6 +5,7 @@ import json
 from dotenv import load_dotenv
 from src.dns_sniffer.dns_sniffer import list_active_interfaces, run_powershell, initiate_sniffing
 import threading
+import idna
 
 @app.route("/")
 def index():
@@ -86,13 +87,67 @@ def run_tests():
         data = json.load(f)
         list_of_domains = []
         list_of_language_codes = []
+        list_of_languages = []
         for test in data['tests']:
             list_of_domains.append(test['url'])
             list_of_language_codes.append(data['languages'][test['language']])
-        list_of_image_files = generate_screenshot(
+            list_of_languages.append(test['language'])
+        list_of_image_files, is_successful = generate_screenshot(
             list_of_domains, list_of_language_codes, browser=browser)
-        test_ua_readiness(list_of_image_files, list_of_language_codes)
+        is_ulabel = test_ua_readiness(list_of_image_files, list_of_language_codes)
+        transmitted_as = [idna.encode(domain) for domain in list_of_domains]
 
         if sniffer_thread.is_alive():
             sniffer_thread.join()
-        return jsonify(success="True")
+
+    results = []
+    
+
+    for i in range(0, len(list_of_domains)):
+        results.append({
+            'language': list_of_languages[i] + " - "+ list_of_language_codes[i],
+            'domain': list_of_domains[i],
+            'is_ulabel': is_ulabel[i],
+            'is_successful': is_successful[i],
+        })
+
+    dns_results = get_dns_results()
+    print(results, dns_results)
+    return render_template('results.html', results=results, dns_results=dns_results)   
+    # return jsonify(success="True")
+
+def get_dns_results():
+    # Read from file
+    requests = []
+    responses = []
+    ids = []
+    dns_results = []
+    with open('./pkt.txt', "r", encoding='utf-8') as f:
+        Lines = f.readlines()
+        for line in Lines:
+            striped_list = line.split(':')
+            if 'Request' in striped_list[0].strip():
+                requests.append({
+                    'id': striped_list[2].strip(),
+                    'query': striped_list[0].strip(),
+                    'url': striped_list[1].strip(),
+                    'query_response': "",
+                    'is_punny_code': True if "xn--" in striped_list[1].strip() else False,
+                    'success': False, 
+                })
+            else:
+                responses.append({
+                    'id': striped_list[2].strip(),
+                    'query': striped_list[0].strip(),
+                    'query_response': "",
+                    'url': '',
+                    'is_punny_code': True if "xn--" in striped_list[1].strip() else False,
+                    'success': True,
+                })          
+    for response in responses:
+        for request in requests:
+            if response['id'] == request['id']:
+                request['success'] = True
+                request['query_response'] = response['query']
+
+    return requests

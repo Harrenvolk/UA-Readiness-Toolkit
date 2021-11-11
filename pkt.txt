@@ -1,0 +1,12 @@
+DNS Request from 192.168.1.3: xn-----ccdabplsdm5a8agd1djzdc1bg8izbl3ci.xn--y9a3aq: 0x00001ca3
+DNS Request from 1.1.1.1: xn-----ccdabplsdm5a8agd1djzdc1bg8izbl3ci.xn--y9a3aq: 0x00001ca3
+DNS Response from 1.1.1.1: xn-----ccdabplsdm5a8agd1djzdc1bg8izbl3ci.xn--y9a3aq: 0x00001ca3
+DNS Request from 192.168.1.3: xn-----6kchpbbbtfa6avfdmtlhmordcb6v9c.xn--80adxhks: 0x00004341
+DNS Request from 1.1.1.1: xn-----6kchpbbbtfa6avfdmtlhmordcb6v9c.xn--80adxhks: 0x00004341
+DNS Response from 1.1.1.1: xn-----6kchpbbbtfa6avfdmtlhmordcb6v9c.xn--80adxhks: 0x00004341
+DNS Request from 192.168.1.3: xn-----lnfbb8fe3cvkui0de0bcg5hxagsg7d5lwail.xn--i1b6b1a6a2e: 0x0000aa61
+DNS Request from 1.1.1.1: xn-----lnfbb8fe3cvkui0de0bcg5hxagsg7d5lwail.xn--i1b6b1a6a2e: 0x0000aa61
+DNS Response from 1.1.1.1: xn-----lnfbb8fe3cvkui0de0bcg5hxagsg7d5lwail.xn--i1b6b1a6a2e: 0x0000aa61
+DNS Request from 192.168.1.3: xn-----euhbb9fd3c7bbdad3ded3bbg7ijbp2ak6mg6ocfhi.xn--2scrj9c: 0x00001fb3
+DNS Request from 1.1.1.1: xn-----euhbb9fd3c7bbdad3ded3bbg7ijbp2ak6mg6ocfhi.xn--2scrj9c: 0x00001fb3
+DNS Response from 1.1.1.1: xn--2scrj9c: 0x00001fb3
