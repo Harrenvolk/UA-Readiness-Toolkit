@@ -2,8 +2,12 @@
 
 {% block body %}
 <div class="container">
-  <table id="domain-test" class="table table-bordered">
-    <thead>
+  <h1 class="display-2">Test Results</h1>
+  <p class="lead">UA Readiness Quotient</p>
+  <hr class="my-2">
+  <h2>Browser Tests</h2>
+  <table id="domain-test" class="table table-striped">
+    <thead class="thead-dark">
       <tr>
         <th scope="col">Language</th>
         <th scope="col">Domain</th>
@@ -13,62 +17,65 @@
     </thead>
     <tbody>
       {% for result in results %}
-        <tr>
-          <td>{{ result.language }}</td>
-          <td>{{ result.domain }}</td>
-          <td>
-            {% if result.is_ulabel %}
-                <span>U-Label</span>
-            {% else %}
-                <span>A-Label</span>
-            {% endif %}
-          </td>
-          <td>
-            {% if result.is_successful %}
-                Passed
-            {% else %}
-                Failed
-            {% endif %}
-          </td>
-        </tr>
+      <tr>
+        <td>{{ result.language }}</td>
+        <td>{{ result.domain }}</td>
+        <td>
+          {% if result.is_ulabel %}
+          <span>U-Label</span>
+          {% else %}
+          <span>A-Label</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if result.is_successful %}
+          ✅
+          {% else %}
+          ❌
+          {% endif %}
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
-
-  <table id="dns-test" class="table table-bordered">
-    <thead>
+  <hr class="my-2">
+  <h2>DNS Tests</h2>
+  <table id="dns-test" class="table table-striped">
+    <thead class="thead-dark">
       <tr>
-        <th scope="col">Id</th>
+        <th scope="col">Txn. ID</th>
         <th scope="col">Query</th>
         <th scope="col">Query-Response</th>
+        <th scope="col">Shown As</th>
         <th scope="col">URL</th>
         <th scope="col">Result</th>
       </tr>
     </thead>
     <tbody>
       {% for result in dns_results %}
-        <tr>
-          <td>{{ result.id }}</td>
-          <td>{{ result.query }}</td>
-          <td>{{ result.query_response }}</td>
-          <td>
-            {% if result.is_punny_code %}
-                <span>Punny code</span>
-            {% else %}
-                <span>U-Label</span>
-            {% endif %}
-        
-        </tr>
+      <tr>
+        <th scope="row">{{ result.id }}</th>
+        <td>{{ result.query }}</td>
+        <td>{{ result.query_response }}</td>
+        <td>
+          {% if result.is_punny_code %}
+          <span>Punycode</span>
+          {% else %}
+          <span>U-Label</span>
+          {% endif %}
+
         <td>{{ result.url }}</td>
         <td>
-            {% if result.success %}
-                <span>Resolved</span>
-            {% else %}
-                <span>Not resolved</span>
-            {% endif %}
-        </tr>
+          {% if result.success %}
+          ✅
+          {% else %}
+          ❌
+          ⚠️
+          {% endif %}
+      </tr>
       {% endfor %}
     </tbody>
   </table>
+  <p>Completely resolved: ✅ | Partially resolved: ⚠️ | Unresolved: ❌</p>
 </div>
 {% endblock %}
